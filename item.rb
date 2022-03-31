@@ -32,15 +32,25 @@ class ItemGetter
   end
 
   def GetItems
+    mutex = Mutex.new
+    threads = []
     @urls.each_with_index { |url, i|
-      puts "Parsing item №#{i + 1}/#{@urls.length}: #{url}"
-      i_html = HTML.new(url).getHTML
-      name = i_html.xpath(NAME_PATH)
-      cost = i_html.xpath(COST_PATH)
-      image = i_html.xpath(IMAGE)
-      reviewcount = i_html.xpath(REVIEW_PATH)
-      @items << Item.new(url, name, image, cost, reviewcount)
+      mutex.synchronize do
+        sleep 0.5
+
+        threads << Thread.new {
+          puts "Parsing item №#{i + 1}/#{@urls.length}: #{url}"
+          i_html = HTML.new(url).getHTML
+          name = i_html.xpath(NAME_PATH).text.strip
+          cost = i_html.xpath(COST_PATH).text.strip
+          image = i_html.xpath(IMAGE_PATH)
+          reviewcount = i_html.xpath(REVIEW_PATH).text.strip
+          @items << Item.new(url, name, image, cost, reviewcount)
+        }
+      end
     }
+
+    threads.each(&:join)
   end
 
   def Items

@@ -19,16 +19,20 @@ class CategoryGetter
 
   def GetCategories
     timestart = Time.now
+    threads = []
     html = HTML.new(@url).getHTML
     category_main = html.xpath(CATEGORY_MAIN)
     category_main.each_with_index { |url, l|
-      c_url = HTML.new(url).getHTML.xpath(CATEGORY)
-      c_url.each_with_index { |cat_url, k|
-        cn = Category.new(cat_url)
-        @categories << cn
-        puts "Parsing category #{cn.url}..."
+      threads << Thread.new {
+        c_url = HTML.new(url).getHTML.xpath(CATEGORY)
+        c_url.each_with_index { |cat_url, k|
+          cn = Category.new(cat_url)
+          @categories << cn
+          puts "Parsing category #{cn.url}..."
+        }
       }
     }
+    threads.each(&:join)
     timedelta = Time.now - timestart
     puts "#{timedelta} seconds"
   end

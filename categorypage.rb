@@ -14,17 +14,21 @@ class CategoryPage
 
   def GetLinks
     timestart = Time.now
+    threads = []
     @pages_number.times do |p_numb|
-      p_url = p_numb == 0 ? @url : @url.to_s + "page=#{p_numb + 1}/"
-      item_html = HTML.new(p_url).getHTML
-      item_links = item_html.xpath(PATH_ITEM)
-      item_links.each do |link|
-        @items_links << link.value
-      end
-      puts "Written page #{p_numb + 1} - #{p_url}
+      threads << Thread.new {
+        p_url = p_numb == 0 ? @url : @url.to_s + "page=#{p_numb + 1}/"
+        item_html = HTML.new(p_url).getHTML
+        item_links = item_html.xpath(PATH_ITEM)
+        item_links.each do |link|
+          @items_links << link.value
+        end
+        puts "Written page #{p_numb + 1} - #{p_url}
 Time #{Time.now.strftime("%d/%m/%Y %H:%M:%S")}
 Total links amount: #{@items_links.length}"
+      }
     end
+    threads.each(&:join)
     timedelta = Time.now - timestart
     puts "#{timedelta} seconds"
   end

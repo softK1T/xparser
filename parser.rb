@@ -1,7 +1,7 @@
 require_relative "category"
 require_relative "item"
 require_relative "categorypage"
-
+require_relative "csvwriter"
 def CategoriesLinks(url)
   categorygetter = CategoryGetter.new(url) # Getting array
   categorygetter.GetCategories # of all
@@ -16,34 +16,33 @@ end
 
 def Items(items_urls)
   itgetter = ItemGetter.new(items_urls) # Getting
-  itgetter.GetItems.Items # Items
+  itgetter.GetItems # Items
+  itgetter.Items
 end
-
+timestart = Time.now
+mutex = Mutex.new
 url = "https://rozetka.com.ua"
 catlinks = CategoriesLinks(url)
 catitemslinks = []
-catlinks.each { |url| puts url.url }
-puts catlinks.length
+threads = []
+i = 0
 catlinks.each { |catlink|
-  puts catlink.url
-  catitemslinks += CategoryItemsLinks(catlink.url)
-  puts catitemslinks.inspect
+  mutex.synchronize do
+    sleep 0.1
+    threads << Thread.new {
+      catitemslinks += CategoryItemsLinks(catlink.url)
+      puts "Total amount: #{catitemslinks.length}"
+    }
+  end
 }
-
+threads.each(&:join)
+mutex.lock
 items = Items(catitemslinks)
-items.each_with_index { |i, k|
-  puts items.name
-}
-puts "=" * 80
-puts "Total amount: #{catitemslinks}"
 
-#
-#
-# AllItems = []
-#
-#
-#
-#
-#
-# csvn = CSVWriter.new("Items.csv")
-# csvn.Write(items)
+puts "=" * 80
+puts "Total amount: #{catitemslinks.length}"
+
+csvn = CSVWriter.new("Items.csv")
+csvn.WriteItems(items)
+
+puts "Time: #{Time.now - timestart}"
