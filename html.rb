@@ -1,6 +1,8 @@
-require "nokogiri"
-require "curb"
+# frozen_string_literal: true
 
+require 'nokogiri'
+require 'curb'
+# html class: downloading and parsing web page by url
 class HTML
   def initialize(url)
     @url = url
@@ -13,7 +15,5 @@ class HTML
     @html = html
   end
 
-  def getHTML
-    @html
-  end
+  attr_accessor :@html
 end
