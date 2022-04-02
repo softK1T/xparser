@@ -21,14 +21,18 @@ class CategoryPage
   def proceed_links
     timestart = Time.now
     threads = []
+    mutex = Mutex.new
     1.upto(@pages_number) do |p|
-      threads << Thread.new do
-        proceed_items_links(p, PAGE_PATH, ITEM_PATH)
+      mutex.synchronize do
+        threads << Thread.new do
+          proceed_items_links(p, PAGE_PATH, ITEM_PATH)
+      end
       end
     end
     threads.each(&:join)
     timedelta = Time.now - timestart
-    puts "#{timedelta} seconds"
+    puts "Paging time: #{timedelta} seconds
+#{Time.now}"
   end
 
   attr_reader :items_links
@@ -43,7 +47,8 @@ class CategoryPage
       @items_links << "#{@url}#{link.value.split('/')[2]}"
     end
     puts "Written page #{p_numb} - #{p_url}
-Time #{Time.now.strftime('%d/%m/%Y %H:%M:%S')}
+Time #{Time.now.strftime('%d/%m/%Y %H:%M:%S')
+    }
 Total links amount: #{@items_links.length}"
   end
 end

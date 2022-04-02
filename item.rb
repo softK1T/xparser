@@ -2,7 +2,9 @@
 
 require_relative 'html'
 require_relative 'config'
+
 $stdout.sync = true
+
 c = Config.new
 IMAGE_PATH = c.image_path
 COST_PATH = c.cost_path
@@ -37,7 +39,6 @@ class ItemGetter
   def proceed_items
     timestart = Time.now
     mutex = Mutex.new
-    sem = Queue.new
     threads = []
     @urls.each_with_index do |url, i|
       mutex.synchronize do

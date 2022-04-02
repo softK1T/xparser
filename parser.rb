@@ -23,6 +23,7 @@ def items(items_urls)
   itgetter.items
 end
 timestart = Time.now
+puts timestart
 mutex = Mutex.new
 url = ARGV[0]
 filename = ARGV[1]
@@ -31,24 +32,23 @@ catitemslinks = []
 threads = []
 catlinks = []
 catlinks[0] = url
-catlinks.each do |catlink|
-  mutex.synchronize do
-    threads << Thread.new do
-      catitemslinks += category_items_links(catlink)
-      puts "Total amount: #{catitemslinks.length}"
-    end
-  end
-end
-threads.each(&:join)
-
-mutex.lock
+# catlinks.each do |catlink|
+#   mutex.synchronize do
+#     threads << Thread.new do
+#       catitemslinks += category_items_links(catlink)
+#       puts "Total amount: #{catitemslinks.length}"
+#     end
+#   end
+# end
+catitemslinks += category_items_links(catlinks[0])
+puts "Total amount: #{catitemslinks.length}"
+# threads.each(&:join)
 
 items = items(catitemslinks)
 
 puts '=' * 80
 puts "Total amount: #{catitemslinks.length}"
 
-CSVW = CSVWriter.new(filename)
-CSVW.write_items(items)
+CSVWriter.new(filename).write_items(items)
 
 puts "Time: #{Time.now - timestart} seconds"
