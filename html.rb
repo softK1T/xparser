@@ -2,6 +2,7 @@
 
 require 'nokogiri'
 require 'curb'
+
 # html class: downloading and parsing web page by url
 class HTML
   def initialize(url)
@@ -15,5 +16,5 @@ class HTML
     @html = html
   end
 
-  attr_accessor :@html
+  attr_accessor :html
 end

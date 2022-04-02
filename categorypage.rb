@@ -1,25 +1,29 @@
 # frozen_string_literal: true
 
-require_relative 'html'
+$stdout.sync = true
 
-PATH_ITEM = '//a[contains(@class, "goods-tile__heading")]/@href'
-PAGE_NUM = '(//a[contains(@class, "pagination__link")])[last()]'
+require_relative 'html'
+require_relative 'config'
+c = Config.new
+PAGE_NUM = c.last_path
+ITEM_PATH = c.item_path
+PAGE_PATH = c.page_path
 # categorypage class: lets you create categorypage-type objects
 class CategoryPage
   def initialize(url)
     @url = url
     @items_links = []
     c_html = HTML.new(url).html
-    @pages_number = c_html.xpath(PAGE_NUM).text.to_i / 50
+    @pages_number = c_html.xpath(PAGE_NUM).text.to_i
     puts "Pages count: #{@pages_number}"
   end
 
   def proceed_links
     timestart = Time.now
     threads = []
-    @pages_number.times do |p_numb|
+    1.upto(@pages_number) do |p|
       threads << Thread.new do
-        proceed_items_links(p_numb)
+        proceed_items_links(p, PAGE_PATH, ITEM_PATH)
       end
     end
     threads.each(&:join)
@@ -31,14 +35,14 @@ class CategoryPage
 
   private
 
-  def proceed_items_links(p_numb)
-    p_url = p_numb.zero? ? @url : @url.to_s + "page=#{p_numb + 1}/"
+  def proceed_items_links(p_numb, page_path, item_path)
+    p_url = p_numb == 1 ? @url : @url.to_s + "#{page_path}#{p_numb}/"
     item_html = HTML.new(p_url).html
-    item_links = item_html.xpath(PATH_ITEM)
+    item_links = item_html.xpath(item_path)
     item_links.each do |link|
-      @items_links << link.value
+      @items_links << "#{@url}#{link.value.split('/')[2]}"
     end
-    puts "Written page #{p_numb + 1} - #{p_url}
+    puts "Written page #{p_numb} - #{p_url}
 Time #{Time.now.strftime('%d/%m/%Y %H:%M:%S')}
 Total links amount: #{@items_links.length}"
   end

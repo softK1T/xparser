@@ -1,0 +1,11 @@
+- categorypage:
+    itempath: //a[contains(@class, "card__link--main")]/@href
+    pagepath: ?page=
+    lastpath: //li[contains(@class, "pg-last")]
+- itempage:
+    costpath: //span[contains(@class, "control__text_main")]/text()
+    imagepath: //img[contains(@class, "lazy loaded")]/@src
+    idpath: //span[contains(@class, "b-product-title__art")]
+    shoppath: //a[contains(@data-switcher-map, "1") and not(@style)]/span/text()
+    namepath: //h1[contains(@itemprop, "name")]
+    available: (//span[contains(@class, "b-product-control__text")])[last()]
