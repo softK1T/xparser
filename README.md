@@ -1,8 +1,10 @@
+# xparser
+
 Ruby (Curb + Nokogiri) web scraper
 
-# Getting started
+## Getting started
 
-## Install curb and nokogiri gems
+### Install curb and nokogiri gems
 ##### Ubuntu 18.04+ 
 - `gem install curb` 
 - `sudo apt-get install libcurl4 libcurl3-gnutls libcurl4-openssl-dev`
@@ -10,8 +12,8 @@ Ruby (Curb + Nokogiri) web scraper
 
 
 ##### Others
-<p>https://github.com/taf2/curb<p>
-<p>https://nokogiri.org/tutorials/installing_nokogiri.html#supported-platforms</p>
+<p>Curb https://github.com/taf2/curb<p>
+<p>Nokogiri https://nokogiri.org/tutorials/installing_nokogiri.html#supported-platforms</p>
 
 ## Run
 
